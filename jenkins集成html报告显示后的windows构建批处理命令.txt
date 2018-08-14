@@ -1,0 +1,51 @@
+echo off
+setlocal enabledelayedexpansion
+set src_dir=C:\Projects\report
+set last_filename=""
+set newest_filename=""
+
+cd /d %src_dir%
+for /f %%a in ('dir /o-d /tc /b test*.html') do (
+	set last_filename=%%~na%%~xa
+	echo 获取到上次生成的报告文件名称为：!last_filename!，文件创建时间为：%%~ta
+	if not !last_filename! == ""  (
+	    goto buildpj
+ 	)else goto buildpj
+)
+
+:buildpj
+cd /d C:\Projects\interface_project_for_test
+python main.py %run_env% %runmode% %project_mode% %projects% %project% %plans% %testsuites% %case_id_list% %global_case_str%
+
+cd /d %src_dir%
+for /f %%a in ('dir /o-d /tc /b test*.html') do (
+    set newest_filename=%%~na%%~xa
+    echo 获取本次生成的报告文件名称为：!newest_filename!
+    if not !newest_filename! == "" (
+        if not !newest_filename! == !last_filename! (
+            goto iconv1
+        )else goto iconv2 
+    )else goto iconv2
+)
+
+:iconv1
+echo 正在删除旧文件jenkins_test_report.html
+del /f jenkins_test_report.html
+echo 正在转换文件编码为utf-8并生成jenkins_test_report.html
+iconv -f gbk -t utf-8 %newest_filename% > "jenkins_test_report.html"
+goto end
+
+:iconv2
+echo 正在删除旧文件jenkins_test_report.html
+del /f jenkins_test_report.html
+
+echo 正在转换文件编码为utf-8并生成jenkins_test_report.html
+iconv -f gbk -t utf-8 "report_for_no_htmldoc_generated.html" > "jenkins_test_report.html"
+
+:end
+echo 转换成功
+
+
+说明：
+需要把report_for_no_htmldoc_generated.html放入到报告生成目录中，例中为C:\Projects\report
+del -f filename 强制删除文件filename

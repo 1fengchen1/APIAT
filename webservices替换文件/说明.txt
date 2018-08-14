@@ -1,0 +1,1 @@
+如果是webservice接口，把该文件复制到interface_project_for_dev\globalpkg，替换对应文件

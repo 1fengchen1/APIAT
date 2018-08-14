@@ -1,0 +1,51 @@
+2018.08.08
+美化htmlreporter.py报告文件，增加了static静态文件夹，包含js，css
+
+2018.08.03
+修改httpprotocol.py
+恢复不小心删除的 import configparser
+
+2018.01.24 
+修改log.py文件
+恢复不小心注释的文件
+
+增加config/https.conf配置，修改httpprotocl.py文件的失败重试逻辑错误，增加https版本配置
+
+
+2017.8.14 修改log.py文件
+修改日志级别缺陷：文件日志级别和控制台日志级别相互影响
+
+
+2017.6.17 修改InterfaceUnittestTestCase.py文件
+解码优化
+
+2017.6.15 修改httpprotocol.py文件
+修复无法自动处理cookie的问题
+
+2017.5.7  修改casestep.py文件
+修改bug 变量名判断问题
+
+2017.4.22 修改casestep.py文件
+bug修复
+
+2017.4.19 
+修改othertools.py：
+改进webservice接口测试，testlink数据转换问题
+
+修改InterfaceUnittestTestCase.py：
+增加html实体解析
+
+修改casestep.py：
+动态参数校验修改,不允许定义纯数字的非全局变量，比如[1],不允许定义[@打头的变量，比如[@var]
+
+修改unittesttestcase.py:
+针对服务器返回xml数据，增加xpath断言，增加xpath提取
+针对非数据库查询，增加提取方式判断，同1个步骤预期结果输出定义，支持同时使用 xpath提取，键值提取，正则表达式提取
+
+2017.4.16 修改mydb.py文件： 
+改进重复执行相同用例，执行相同sql，第二次查询开始，数据库存在数据，但是查询查不到结果的问题
+
+2017.3.31 修改 othertools.py，htmlreporter.py：
+修复webservice接口下，数据转换问题
+还有报告不显示xml格式参数问题。
+

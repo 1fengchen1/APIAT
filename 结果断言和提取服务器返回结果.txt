@@ -1,0 +1,397 @@
+===============================================结果断言===============================================
+1、包含成员
+{
+"检查":"body",
+"匹配规则":"包含成员",
+"条件":[{"模式":"\"success\"", "消息":"创建储值卡支付订单失败,返回json串不包含key - success"},{"模式":"\"attach\"", "消息":"创建储值卡支付订单失败,返回json串不包含key - attach"}]
+}
+
+注意：
+1）检查给定模式是否包含在指定内容中，可以用于检查给定字符串是否包含在指定内容中，给定值是否是集合/元组/列表成员、字典的key值
+2）指定的内容，必须是可迭代对象，目前仅支持“字符串(包括html文档)”，“字典”，“列表”，“元组”，“集合”
+3）检查：body-在响应体中查找(如果检查sql查询返回，固定为body)，header-在响应头中查找， code-在响应状态码中查找，以下不再赘述
+4）条件：格式为[{"模式":value1,"消息":"消息内容1"},{"模式":value2,"消息":"消息内容2"},{"模式":value3,"消息":"消息内容3"},……]，如果要检查的value本身包含双引号，则替换双引号为 \"
+5）条件的含义是：在body/header/code中查找想要的值value,找不到则反馈“消息”中填写的内容，如上，可以支持多个模式的校验
+
+2、不包含成员
+{"检查":"body",
+"匹配规则":"不包含成员",
+"条件":[{"模式":"\"success\"", "消息":"创建储值卡支付订单失败,返回json串包含key - success"},{"模式":"\"attach\"", "消息":"创建储值卡支付订单失败,返回json串包含key - attach"}]
+}
+
+注意：参考“包含成员”
+
+
+3、包含字符串
+{
+"检查":"body",
+"匹配规则":"包含字符串",
+"条件":[{"模式":"\"success\":true", "消息":"创建储值卡支付订单失败，success不为True"},{"模式":"\"success\":false", "消息":"创建储值卡支付订单失败，success不为false"}]
+}
+
+注意：
+1）检查给定模式是否包含在指定字符串中
+2）仅支持服务器返回内容为 字符串(包括html文档)，字典，列表，元组，集合，int，float型的检查
+3）如果要检查的value本身包含双引号，则替换双引号为 \"
+
+4、不包含字符串
+{
+"检查":"body",
+"匹配规则":"不包含字符串",
+"条件":[{"模式":"\"success\":true", "消息":"创建储值卡支付订单失败，success为True"},{"模式":"\"success\":false", "消息":"创建储值卡支付订单失败，success为false"}]
+}
+
+注意：
+1）检查给定模式是否不包含于指定字符串中
+2）仅支持服务器返回内容为 字符串(包括html文档)，字典，列表，元组，集合，int，float型的检查
+3）如果要检查的value本身包含双引号，则替换双引号为 \"
+
+
+5、键值相等
+{
+"检查":"body",
+"匹配规则":"键值相等",
+"条件":[{"模式":{"success":true}, "消息":"创建储值卡支付订单失败，success不为True"},{"模式":{"success":false}, "消息":"创建储值卡支付订单失败，success不为false"}]
+}
+
+待检查json串
+{
+    "fullname": "tester",
+    "goods_type1": [
+        {
+            "goodsId": 1,
+            "goods_name": "apple"
+        },
+        {
+            "goodsId": 2,
+            "goods_name": "apple"
+        }
+    ],
+    "goods_type2": [
+        {
+            "goodsId": 1,
+            "goods_name": "redapple"
+        }
+    ],
+    "goods_type3": {
+        "goodsId": 7
+    },
+    "goods_type4": 7,
+    "price": {
+        "apple": 10.5,
+        "pear": 8
+    }
+}
+
+填写：								 
+{
+"检查":"body",
+"匹配规则":"键值相等",
+"条件":[
+{"模式":{"fullname":"tester"}, "消息":"fullname不为tester"},
+{"模式":{"goods_type1":{"goodsId":1}}, "消息":"goodsId不为1"},
+{"模式":{"goods_type1":{"goods_name":"apple"}}, "消息":"goods_name不为apple"},
+{"模式":{"goods_type2":{"goods_name":"redapple"}}, "消息":"goods_name不为redapple"},
+{"模式":{"goods_type3":{"goodsId":7}}, "消息":"goodsId不为7"},
+{"模式":{"price":{"apple":10.5}}, "消息":"apple不为10.5"}]
+}
+
+注意：
+1) 用于检查给定模式中key-value是否和指定字典中对应层级的key-value相同
+2) 目前仅支持服务器返回内容为字典类型的json串、字符类型的字典的key-value比较
+3）条件中模式对应值填写规范：{"key_of_leve1":value} 、{"key_of_leve1":{"key_of_leve2":value}}、{"key_of_leve1":{"key_of_leve2":{"key_of_leve3":value}}}  
+也就说，键值的层级关系和服务器返回的键值层级关系一一对应，如果最后层级存在多个一样的{"key":value}，那取其中一个
+
+
+6、匹配正则表达式
+{
+"检查":"body",
+"匹配规则":"匹配正则表达式",
+"条件":[{"模式":"\"success\":true", "消息":"创建储值卡支付订单失败，success不为True"},{"模式":"\"success\":false", "消息":"创建储值卡支付订单失败，success不为false"}]
+}
+
+注意：
+1）用于检查指定内容中是否匹配给定模式，即正则表达式
+2）注意这里的匹配为包含关系，即正则表达式表示的内容为指定内容的子集
+3）指定内容必须为字符串类型，所以仅支持服务器返回内容为 字符串(包括html文档)，字典，列表，元组，集合，int，float型的检查
+
+7、不匹配正则表达式
+{
+"检查":"body",
+"匹配规则":"不匹配正则表达式",
+"条件":[{"模式":"\"success\":true", "消息":"创建储值卡支付订单失败，success为True"},{"模式":"\"success\":false", "消息":"创建储值卡支付订单失败，success为false"}]
+}
+
+注意：
+1）用于检查指定内容中是否不匹配给定模式，即正则表达式
+2）注意这里的匹配为包含关系，即正则表达式表示的内容不为指定内容的子集
+3）指定内容必须为字符串类型，所以仅支持服务器返回内容为 字符串(包括html文档)，字典，列表，元组，集合，int，float型的检查
+
+8、完全匹配字典
+{
+"检查":"body",
+"匹配规则":"完全匹配字典",
+"条件":[{"模式":{"success":true}, "消息":"创建储值卡支付订单失败,返回结果和字典模式不匹配"}]
+}
+
+{
+"检查":"body",
+"匹配规则":"完全匹配字典",
+"条件":[{"模式":{"success":true,"message":null,"attach":"20801419623725867008"}, "消息":"创建储值卡支付订单失败,返回结果和字典模式不匹配"}]
+}
+
+注意：
+1、用于检查给定模式即字典，其键值对是否和指定字典的键值对完全相同
+2、目前仅支持服务器返回内容为json串、字符串类型的字典的比较
+
+9、完全匹配列表
+{
+"检查":"body",
+"匹配规则":"完全匹配列表",
+"条件":[{"模式":"[\"success\",\"shouke\",2016]", "消息":"创建储值卡支付订单失败,返回结果和列表模式不匹配"}]
+}
+
+注意：
+1）用于检查给定模式，即列表是否和指定列表的元素值一模一样
+2）目前仅支持服务器返回内容为列表、字符串类型的列表的比较
+3）如果要检查的value本身包含双引号，则替换双引号为
+
+
+10、完全匹配集合
+{
+"检查":"body",
+"匹配规则":"完全匹配集合",
+"条件":[{"模式":"{\"success\",\"shouke\",2016}", "消息":"创建储值卡支付订单失败,返回结果和集合模式不匹配"}]
+}
+
+
+注意：
+1）用于检查给定模式，即列表是否和指定集合的元素值一模一样
+2）目前仅支持服务器返回内容为集合、字符串类型的集合的比较
+3）如果要检查的value本身包含双引号，则替换双引号为
+
+11、完全匹配元组
+{
+"检查":"body",
+"匹配规则":"完全匹配元组",
+"条件":[{"模式":"(\"success\",\"shouke\",2016)", "消息":"创建储值卡支付订单失败,返回结果和元组模式不匹配"}]
+}
+
+注意：
+1）用于检查给定模式，即列表是否和指定元组的元素值一模一样
+2）目前仅支持服务器返回内容为元组、字符串类型的元组的比较
+
+说明：
+通常接口内容会包含两类标识，比如code,flag,success，其中一类表示通讯是否成功，比如："code":4001,表示请求成功，另一种表示业务执行成功，比如 "success":true,断言的时候需要注意有所选择，因为
+通讯请求成功并代表业务执行成功。
+
+12、xpath断言
+条件:[{"模式":{"xpath表达式1":期望值},"消息":"不符合断言时抛出的消息"},{"模式":{"xpath表达式2":期望值},"消息":"不符合断言时抛出的消息"}]
+{
+"检查":"body",
+"匹配规则":"xpath断言",
+"条件":[{"模式":{"./soap:Body/xmlns:getSupportProvinceResponse/xmlns:getSupportProvinceResult/xmlns:string[1]":"直辖市","./soap:Body/xmlns:getSupportProvinceResponse/xmlns:getSupportProvinceResult/xmlns:string[2]":"特别行政区"}, "消息":"结点排序错误"}]
+}
+
+注意：
+1) 每个xpath表达式只能表示一个元素，不支持一个xpath表达式代表多个元素的提取
+
+例子：假设服务器返回如下
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <getSupportProvinceResponse
+            xmlns="http://WebXml.com.cn/">
+            <getSupportProvinceResult>
+                <string>直辖市</string>
+                <string>特别行政区</string>
+                <string>黑龙江</string>
+                <string>吉林</string>
+                <string>辽宁</string>
+                <string>内蒙古</string>
+                <string>河北</string>
+                <string>河南</string>
+                <string>山东</string>
+                <string>山西</string>
+                <string>江苏</string>
+                <string>安徽</string>
+                <string>陕西</string>
+                <string>宁夏</string>
+                <string>甘肃</string>
+                <string>青海</string>
+                <string>湖北</string>
+                <string>湖南</string>
+                <string>浙江</string>
+                <string>江西</string>
+                <string>福建</string>
+            </getSupportProvinceResult>
+        </getSupportProvinceResponse>
+    </soap:Body>
+</soap:Envelope>
+
+"条件":[{"模式":{"./soap:Body/xmlns:getSupportProvinceResponse/xmlns:getSupportProvinceResult/xmlns:string[1]":"直辖市","./soap:Body/xmlns:getSupportProvinceResponse/xmlns:getSupportProvinceResult/xmlns:string[2]":"特别行政区"}, "消息":"结点排序错误"}]
+
+	
+===============================================针对数据库查询结果的断言===============================================
+1、相等
+{"检查":"body",
+"匹配规则":"相等",
+"条件"：[{"模式"："[CaseStep.device_no]=123456", "消息"：“登录失败，device_no不为123456”}]
+}
+
+说明：
+1、如果变量为字符串，要比较的对象也为字符串，需要加\",如"条件"：[{"模式"："\"[CaseStep.device_no]\"=\"123456\"", "消息"：“登录失败，device_no不为123456”}
+2、如果匹配规则为相等，但是模式写了不相等 !=，该模式无效，自动跳过对该模式的检测
+
+2、不相等
+{"检查":"body",
+"匹配规则":"不相等",
+"条件"：[{"模式"："[CaseStep.device_no]!=123456", "消息"：“登录失败，device_no不为123456”}]
+}
+
+1、如果变量为字符串，要比较的对象也为字符串，需要加\",如"条件"：[{"模式"："\"[CaseStep.device_no]\"!=\"123456\"", "消息"：“登录失败，device_no等于123456”}
+2、如果匹配规则为不相等，但是模式写了相等 =，该模式无效，自动跳过对该模式的检测
+
+===============================================提取web服务器返回结果===============================================
+1、键值提取
+"输出":{"dic":{"attach":{"attach":"value"},"attach2":{"attach":"value"}}}
+
+注意：
+1）目前进支持服务器返回内容为字典、字符串类型的字典的检查
+2）“输出”含义 {"提取方式":{"变量名称":{"字典对应层级的key":"key_value"}}}
+3）输入规范参考断言结果中的“键值相等”规则
+
+2、正则表达式提取
+例：
+假设服务器返回：b'{"success":true,"message":null,"attach":"20801781354907201536"}'
+
+"输出":{"re":{"success": "\"success\":(.+?),","attach":"attach\":\"(.+?)\""}} 这里将会提取ture到变量success，提取attach对应的key值到attach变量
+
+注意：
+1）仅支持服务器返回内容为 字符串(包括html文档)，字典，列表，元组，集合，int，float型的提取
+2）提取的内容为括号中的内容，使用提取的变量：变量名_N，其中N为数字，1，2，3...，1表示提取的第一个内容，2，表示第2个提取的内容，，以此类推。例：success_1, attach_1
+3）“输出”含义 {"提取方式":{"变量名称1":"正则表达式1","变量名称2":"正则表达式2",……}}
+4）从服务器返回的哪部分数据进行提取，这里会根据"检查"进行选择，如果code则从响应码提取，header则从响应头提取，body则从响应体中提取
+
+
+3、xpath提取
+例子：假设服务器返回如下
+<soap:Envelope test="ddd" xmlns  =  "http://www.examp.com"
+    xmlns:soap = "http://schemas.xmlsoap.org/soap/envelope/" >
+    <soap:td>
+        <testd></testd>
+    </soap:td>
+    <ns1:Body test="ddd"
+        xmlns="http://xxx.com"
+        xmlns:ns1="http://service.rpt.data.platform.ddt.sf.com/" name="tt">
+        <ns2:selectByPrimaryKeyResponse
+            xmlns:ns2="http://service.rpt.data.platform.ddt.sf2.com/" name="tt">
+            <return>
+                <copeWith>1.00</copeWith>
+                <discount>0.99</discount>
+                <id>144</id>
+                <invoice>2</invoice>
+                <invoiceType></invoiceType>
+                <orderCode>DDT201704071952057186</orderCode>
+                <orderDate>2017-04-07 19:52:06.0</orderDate>
+                <paid>0.01</paid>
+                <payType>pc</payType>
+                <productName>快递包</productName>
+                <state>0</state>
+                <userId>2</userId>
+            </return>
+            <return>
+                <copeWith>1.00</copeWith>
+                <discount>0.99</discount>
+                <id>143</id>
+                <invoice>2</invoice>
+                <invoiceType></invoiceType>
+                <orderCode>DDT201704071951065731</orderCode>
+                <orderDate>2017-04-07 19:51:07.0</orderDate>
+                <paid>0.01</paid>
+                <payType>pc</payType>
+                <productName>快递包</productName>
+                <state>0</state>
+                <userId>2</userId>
+            </return>
+            <return>
+                <copeWith>1.00</copeWith>
+                <discount>0.99</discount>
+                <id>142</id>
+                <invoice>2</invoice>
+                <invoiceType></invoiceType>
+                <orderCode>DDT201704071945408575</orderCode>
+                <orderDate>2017-04-07 19:45:40.0</orderDate>
+                <paid>0.01</paid>
+                <payType>pc</payType>
+                <productName>快递包</productName>
+                <state>0</state>
+                <userId>2</userId>
+            </return>
+            <return attr="re">
+                <copeWith>1.00</copeWith>
+                <discount>0.99</discount>
+                <id>141</id>
+                <invoice>1</invoice>
+                <invoiceType>增值税普通发票</invoiceType>
+                <orderCode>DDT201704071845403738</orderCode>
+                <orderDate>2017-04-07 18:45:41.0</orderDate>
+                <paid>0.01</paid>
+                <productName>快递包</productName>
+                <state>0</state>
+                <userId attr="testattr">2</userId>
+            </return>
+        </ns2:selectByPrimaryKeyResponse>
+    </ns1:Body>
+    <soap:Body test="ddd"></soap:Body>
+    <soap:Body2 test="ddd">
+        <selectByPrimaryKeyResponse></selectByPrimaryKeyResponse>
+    </soap:Body2>
+</soap:Envelope>
+
+"输出":{"xpath":{"copeWith": "./ns1:Body/ns2:selectByPrimaryKeyResponse/xmlns:return[1]/xmlns:copeWith",
+"orderCode":"./ns1:Body/ns2:selectByPrimaryKeyResponse/xmlns:return[3]/xmlns:orderCode"}}
+
+这里将会提取copeWith元素的value到变量copeWith，提取orderCode对应的value到orderCode变量
+
+
+注意：
+1) 仅支持服务器返回内容为 xml 格式字符的提取
+2) “输出”含义 {"提取方式":{"变量名称1":"xpath表达式1","变量名称2":"xpath表达式2",……}}}
+3) 每个xpath表达式只能表示一个元素，不支持一个xpath表达式代表多个元素的提取
+
+注意：针对同一个类，如果定义了重复的变量名，那将会覆盖原有变量名，所以建议定义变量时添加标识，比如 用例id_编号_变量名
+
+===============================================提取数据库服务器返回结果===============================================
+1、提取查询sql返回记录
+例：
+假设步骤动作如下：
+{
+"步骤类型":"执行sql",
+"单条查询":"SELECT id, name FROM customer WHERE channel_serial = %s",
+"参数":"(\"[global_openId]\",)"
+}
+
+预期结果如下：
+{
+"检查":"body",
+"输出":{"customer_id":1, "customer_name":2}
+}
+
+那么将把查询返回的id，name分别存储到customer_id,customer_name变量中。
+
+注意：
+1）输出：{"var_name1":1, "var_name2":2, "var_name3":3,……,"var_nameN":N},N=1,2,3,...表示把SQL返回记录中第N列的值
+放到存储到变量中
+
+2）仅支持返回单条sql记录的提取
+3）如果定义重复变量名，会覆盖原有变量
+
+
+
+
+
+
